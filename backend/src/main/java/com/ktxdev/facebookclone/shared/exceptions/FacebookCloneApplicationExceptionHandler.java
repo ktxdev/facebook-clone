@@ -35,4 +35,14 @@ public class FacebookCloneApplicationExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST.value())
                 .build();
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidRequestException.class)
+    public Error handleInvalidRequestException(InvalidRequestException ex) {
+        return Error.builder()
+                .timestamp(LocalDateTime.now().toString())
+                .message(ex.getMessage())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .build();
+    }
 }

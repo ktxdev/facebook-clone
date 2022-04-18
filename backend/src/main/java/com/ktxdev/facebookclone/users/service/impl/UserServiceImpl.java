@@ -8,7 +8,6 @@ import com.ktxdev.facebookclone.users.dto.UserPasswordUpdateDTO;
 import com.ktxdev.facebookclone.users.dto.UserUpdateDTO;
 import com.ktxdev.facebookclone.users.service.UserService;
 import com.ktxdev.facebookclone.users.service.events.UserSignUpSuccessfulEvent;
-import com.ktxdev.facebookclone.users.service.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -22,8 +21,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
-
-    private final UserMapper userMapper;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -39,7 +36,7 @@ public class UserServiceImpl implements UserService {
         if (userDao.existsByUsername(userCreateDTO.getUsername()))
             throw new InvalidRequestException("Username already taken");
 
-        User user = userMapper.userCreateDTOToUser(userCreateDTO);
+        User user = User.fromDto(userCreateDTO);
         user.setPassword(passwordEncoder.encode(userCreateDTO.getPassword()));
 
         userDao.saveAndFlush(user);

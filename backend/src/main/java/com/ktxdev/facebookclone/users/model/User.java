@@ -1,13 +1,16 @@
 package com.ktxdev.facebookclone.users.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ktxdev.facebookclone.users.dto.UserCreateDTO;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 @Data
 @Entity
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class User {
@@ -29,4 +32,10 @@ public class User {
 
     private String profilePictureUrl;
 
+    public static User fromDto(UserCreateDTO userCreateDTO) {
+        return User.builder()
+                .email(userCreateDTO.getEmail())
+                .username(userCreateDTO.getUsername())
+                .build();
+    }
 }
