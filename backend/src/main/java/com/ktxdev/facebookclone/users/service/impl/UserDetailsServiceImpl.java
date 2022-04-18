@@ -1,7 +1,7 @@
 package com.ktxdev.facebookclone.users.service.impl;
 
-import com.ktxdev.facebookclone.users.User;
-import com.ktxdev.facebookclone.users.dao.UserDAO;
+import com.ktxdev.facebookclone.users.model.User;
+import com.ktxdev.facebookclone.users.dao.UserDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -17,7 +17,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserDAO userDAO;
+    private final UserDao userDAO;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         log.info("### Username: {}", username);
