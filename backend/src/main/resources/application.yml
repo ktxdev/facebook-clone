@@ -1,1 +1,24 @@
+fb-clone:
+  email-sender: noreply@fbclone.com
 
+spring:
+  mail:
+    host: smtp.mailtrap.io
+    port: 2525
+    username: 0f291113d91405
+    password: c2d0f5e27c361b
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/fb_clone
+    username: 'root'
+    password: 'P@ssw0rd'
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: create-drop
