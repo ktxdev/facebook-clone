@@ -1,7 +1,6 @@
 package com.ktxdev.facebookclone.users.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.ktxdev.facebookclone.auth.model.TwoFactorAuthType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

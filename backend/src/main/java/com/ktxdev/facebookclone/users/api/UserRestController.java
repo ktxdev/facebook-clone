@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +24,7 @@ public class UserRestController {
 
     @PostMapping("opn/v1/users")
     public ResponseEntity<User> signUp(
-            @RequestBody UserCreateDTO userCreateDTO,
+            @RequestBody @Valid UserCreateDTO userCreateDTO,
             HttpServletRequest request
     ) {
         val uri = ServletUriComponentsBuilder.fromRequestUri(request).build().toUri();

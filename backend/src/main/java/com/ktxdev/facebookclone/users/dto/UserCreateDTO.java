@@ -2,16 +2,16 @@ package com.ktxdev.facebookclone.users.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 @Data
 public class UserCreateDTO {
-    @NotNull(message = "Email should be provided")
+    @NotBlank(message = "Email should be provided")
     private String email;
 
-    @NotNull(message = "Username should be provided")
+    @NotBlank(message = "Username should be provided")
     private String username;
 
-    @NotNull(message = "Password should be provided")
+    @NotBlank(message = "Password should be provided")
     private String password;
 }
