@@ -1,6 +1,7 @@
 package com.ktxdev.facebookclone.users.service.impl;
 
 import com.ktxdev.facebookclone.shared.exceptions.InvalidRequestException;
+import com.ktxdev.facebookclone.shared.exceptions.RecordNotFoundException;
 import com.ktxdev.facebookclone.users.model.User;
 import com.ktxdev.facebookclone.users.dao.UserDao;
 import com.ktxdev.facebookclone.users.dto.UserCreateDTO;
@@ -10,7 +11,9 @@ import com.ktxdev.facebookclone.users.service.UserService;
 import com.ktxdev.facebookclone.users.service.events.UserSignUpSuccessfulEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,8 +80,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User deleteMyAccount() {
-        return null;
+    public void deleteMyAccount() {
+        val usernameOrEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        val user = userDao.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new RecordNotFoundException(String.format("User with the email or username: %s not found", usernameOrEmail)));
+
+        userDao.delete(user);
     }
 
     @Override

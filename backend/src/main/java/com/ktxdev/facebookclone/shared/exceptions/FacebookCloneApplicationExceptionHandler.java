@@ -45,4 +45,14 @@ public class FacebookCloneApplicationExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST.value())
                 .build();
     }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(RecordNotFoundException.class)
+    public Error handleRecordNotFoundException(RecordNotFoundException ex) {
+        return Error.builder()
+                .timestamp(LocalDateTime.now().toString())
+                .message(ex.getMessage())
+                .status(HttpStatus.NOT_FOUND.value())
+                .build();
+    }
 }

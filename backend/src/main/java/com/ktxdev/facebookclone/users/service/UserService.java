@@ -21,7 +21,7 @@ public interface UserService {
 
     User updatePassword(UserPasswordUpdateDTO userPasswordUpdateDTO);
 
-    User deleteMyAccount();
+    void deleteMyAccount();
 
     User getMyAccountDetails();
 }
