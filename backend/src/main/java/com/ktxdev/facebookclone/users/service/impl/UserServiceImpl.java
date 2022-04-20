@@ -76,14 +76,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updatePassword(UserPasswordUpdateDTO userPasswordUpdateDTO) {
-        return null;
+        val authentication = SecurityContextHolder.getContext().getAuthentication();
+        val user = findByUsernameOrEmail(authentication.getName());
+        if (passwordEncoder.matches(userPasswordUpdateDTO.getOldPassword(), user.getPassword())) {
+            throw new InvalidRequestException("Old password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(userPasswordUpdateDTO.getNewPassword()));
+
+        return userDao.save(user);
     }
 
     @Override
     public void deleteMyAccount() {
         val usernameOrEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        val user = userDao.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
-                .orElseThrow(() -> new RecordNotFoundException(String.format("User with the email or username: %s not found", usernameOrEmail)));
+        val user = findByUsernameOrEmail(usernameOrEmail);
 
         userDao.delete(user);
     }
@@ -91,5 +98,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getMyAccountDetails() {
         return null;
+    }
+
+    @Override
+    public User findByUsernameOrEmail(String usernameOrEmail) {
+        return userDao.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+                .orElseThrow(() -> new RecordNotFoundException(String.format("User with the email or username: %s not found", usernameOrEmail)));
     }
 }

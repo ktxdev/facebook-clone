@@ -24,4 +24,6 @@ public interface UserService {
     void deleteMyAccount();
 
     User getMyAccountDetails();
+
+    User findByUsernameOrEmail(String usernameOrEmail);
 }
