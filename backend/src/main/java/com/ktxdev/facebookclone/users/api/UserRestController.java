@@ -22,7 +22,7 @@ public class UserRestController {
 
     private final UserService userService;
 
-    @PostMapping("opn/v1/users")
+    @PostMapping("opn/v1/users/sign-up")
     public ResponseEntity<User> signUp(
             @RequestBody @Valid UserCreateDTO userCreateDTO,
             HttpServletRequest request
