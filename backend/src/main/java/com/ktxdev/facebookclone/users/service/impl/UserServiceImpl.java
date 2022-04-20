@@ -97,7 +97,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getMyAccountDetails() {
-        return null;
+        val usernameOrEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        return findByUsernameOrEmail(usernameOrEmail);
     }
 
     @Override
