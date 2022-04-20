@@ -6,7 +6,7 @@ import com.ktxdev.facebookclone.users.model.User;
 import java.util.Optional;
 
 public interface UserDao extends BaseDao<User> {
-    Optional<User> findByEmail(String email);
+    Optional<User> findByUsernameOrEmail(String username, String email);
 
     boolean existsByEmail(String email);
 
