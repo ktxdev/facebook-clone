@@ -50,8 +50,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(UserUpdateDTO userUpdateDTO) {
-        return null;
+    public User updateMyUsername(UserUpdateDTO userUpdateDTO) {
+        if (userDao.existsByUsername(userUpdateDTO.getUsername()))
+            throw new InvalidRequestException("Username already in use");
+
+        val authentication = SecurityContextHolder.getContext().getAuthentication();
+        val user = findByUsernameOrEmail(authentication.getName());
+        user.setUsername(userUpdateDTO.getUsername());
+        return userDao.save(user);
     }
 
     @Override

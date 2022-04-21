@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 public interface UserService {
     User signUp(UserCreateDTO userCreateDTO);
 
-    User updateUser(UserUpdateDTO userUpdateDTO);
+    User updateMyUsername(UserUpdateDTO userUpdateDTO);
 
     User changeEmail(long id, String email);
 
