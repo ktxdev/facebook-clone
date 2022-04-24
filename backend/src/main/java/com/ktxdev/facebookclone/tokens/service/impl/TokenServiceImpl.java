@@ -57,6 +57,7 @@ public class TokenServiceImpl implements TokenService {
         return UUID.randomUUID()
                 .toString()
                 .replace("-", "")
-                .substring(0, 6);
+                .substring(0, 6)
+                .toUpperCase();
     }
 }
