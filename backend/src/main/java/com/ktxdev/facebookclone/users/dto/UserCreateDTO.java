@@ -2,6 +2,7 @@ package com.ktxdev.facebookclone.users.dto;
 
 import lombok.Data;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotBlank;
 
 @Data

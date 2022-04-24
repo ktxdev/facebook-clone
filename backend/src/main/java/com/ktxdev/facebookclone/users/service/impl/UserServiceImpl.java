@@ -2,6 +2,8 @@ package com.ktxdev.facebookclone.users.service.impl;
 
 import com.ktxdev.facebookclone.shared.exceptions.InvalidRequestException;
 import com.ktxdev.facebookclone.shared.exceptions.RecordNotFoundException;
+import com.ktxdev.facebookclone.tokens.service.TokenService;
+import com.ktxdev.facebookclone.users.api.UserRestController;
 import com.ktxdev.facebookclone.users.model.User;
 import com.ktxdev.facebookclone.users.dao.UserDao;
 import com.ktxdev.facebookclone.users.dto.UserCreateDTO;
@@ -10,13 +12,22 @@ import com.ktxdev.facebookclone.users.dto.UserUpdateDTO;
 import com.ktxdev.facebookclone.users.service.UserService;
 import com.ktxdev.facebookclone.users.service.events.UserSignUpSuccessfulEvent;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
 @Slf4j
 @Service
@@ -24,6 +35,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class UserServiceImpl implements UserService {
 
     private final UserDao userDao;
+
+    private final TokenService tokenService;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -44,7 +57,14 @@ public class UserServiceImpl implements UserService {
 
         userDao.saveAndFlush(user);
 
-        applicationEventPublisher.publishEvent(new UserSignUpSuccessfulEvent(user));
+        val token = tokenService.generateToken(user);
+
+        val url = linkTo(methodOn(UserRestController.class)
+                .verifyEmail(user.getUsername(), token.getToken()))
+                .toUri()
+                .toString();
+
+        applicationEventPublisher.publishEvent(new UserSignUpSuccessfulEvent(user, url));
 
         return user;
     }
@@ -61,13 +81,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User changeEmail(long id, String email) {
-        return null;
-    }
+    @Transactional
+    public User verifyEmail(String username, String tokenString) {
+        val user = userDao.findByUsernameOrEmail(username, username)
+                .orElseThrow(() -> new RecordNotFoundException(String.format("User with username: %s not found", username)));
 
-    @Override
-    public User verifyEmail(long id, String email) {
-        return null;
+        if (!tokenService.isValidToken(tokenString))
+            throw new InvalidRequestException("Token is invalid");
+
+        val token = tokenService.findByToken(tokenString);
+        if (!token.getOwner().getEmail().equals(username))
+            throw new InvalidRequestException("Token is invalid");
+
+        user.setVerified(true);
+        tokenService.useToken(token);
+
+        return userDao.save(user);
     }
 
     @Override
@@ -89,7 +118,6 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setPassword(passwordEncoder.encode(userPasswordUpdateDTO.getNewPassword()));
-
         return userDao.save(user);
     }
 
@@ -97,7 +125,6 @@ public class UserServiceImpl implements UserService {
     public void deleteMyAccount() {
         val usernameOrEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         val user = findByUsernameOrEmail(usernameOrEmail);
-
         userDao.delete(user);
     }
 

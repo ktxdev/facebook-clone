@@ -11,9 +11,7 @@ public interface UserService {
 
     User updateMyUsername(UserUpdateDTO userUpdateDTO);
 
-    User changeEmail(long id, String email);
-
-    User verifyEmail(long id, String email);
+    User verifyEmail(String username, String token);
 
     User removeProfilePicture(long id);
 

@@ -6,10 +6,7 @@ import com.ktxdev.facebookclone.users.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,5 +27,13 @@ public class UserRestController {
         val uri = ServletUriComponentsBuilder.fromRequestUri(request).build().toUri();
         return ResponseEntity.created(uri)
                 .body(userService.signUp(userCreateDTO));
+    }
+
+    @PostMapping("opn/v1/users/verify-email")
+    public ResponseEntity<User> verifyEmail(
+            @RequestParam String username,
+            @RequestParam String token
+    ) {
+        return ResponseEntity.ok(userService.verifyEmail(username, token));
     }
 }
