@@ -1,5 +1,7 @@
 package com.ktxdev.facebookclone.users.service.impl;
 
+import com.ktxdev.facebookclone.filestore.api.FileStoreRestController;
+import com.ktxdev.facebookclone.filestore.service.FileStoreService;
 import com.ktxdev.facebookclone.shared.exceptions.InvalidRequestException;
 import com.ktxdev.facebookclone.shared.exceptions.RecordNotFoundException;
 import com.ktxdev.facebookclone.tokens.service.TokenService;
@@ -26,6 +28,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.security.Principal;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 
@@ -39,6 +42,8 @@ public class UserServiceImpl implements UserService {
     private final TokenService tokenService;
 
     private final PasswordEncoder passwordEncoder;
+
+    private final FileStoreService fileStoreService;
 
     private final ApplicationEventPublisher applicationEventPublisher;
 
@@ -105,8 +110,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User uploadProfilePicture(long id, MultipartFile file) {
-        return null;
+    public User uploadProfilePicture(MultipartFile file, Principal principal) {
+        val user = findByUsernameOrEmail(principal.getName());
+        val filename =  fileStoreService.save(user.getUsername(), file);
+        val profilePictureUrl = String.format("http://localhost:8080/opn/api/v1/filestore/%s?directory=%s", filename, user.getUsername());
+//                linkTo(methodOn(FileStoreRestController.class)
+//                .download(filename, user.getUsername()))
+//                .toUri()
+//                .toString();
+
+        user.setProfilePictureUrl(profilePictureUrl);
+        return userDao.save(user);
     }
 
     @Override

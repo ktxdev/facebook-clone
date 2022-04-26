@@ -6,6 +6,8 @@ import com.ktxdev.facebookclone.users.dto.UserPasswordUpdateDTO;
 import com.ktxdev.facebookclone.users.dto.UserUpdateDTO;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
+
 public interface UserService {
     User signUp(UserCreateDTO userCreateDTO);
 
@@ -15,7 +17,7 @@ public interface UserService {
 
     User removeProfilePicture(long id);
 
-    User uploadProfilePicture(long id, MultipartFile file);
+    User uploadProfilePicture(MultipartFile file, Principal principal);
 
     User updatePassword(UserPasswordUpdateDTO userPasswordUpdateDTO);
 

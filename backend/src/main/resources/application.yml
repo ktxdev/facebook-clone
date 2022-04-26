@@ -1,12 +1,18 @@
 fb-clone:
   email-sender: noreply@fbclone.com
 
+aws:
+  access-key: 'ACCESS_KEY'
+  secret-key: 'SECRET_KEY'
+  region: 'us-east-2'
+  bucket: 'fb-clone'
+
 spring:
   mail:
     host: smtp.mailtrap.io
     port: 2525
-    username: 0f291113d91405
-    password: c2d0f5e27c361b
+    username: '0f291113d91405'
+    password: 'c2d0f5e27c361b'
     properties:
       mail:
         smtp:
