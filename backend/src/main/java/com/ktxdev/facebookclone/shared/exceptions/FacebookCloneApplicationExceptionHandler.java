@@ -55,4 +55,14 @@ public class FacebookCloneApplicationExceptionHandler {
                 .status(HttpStatus.NOT_FOUND.value())
                 .build();
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(FileStorageException.class)
+    public Error handleFileStorageException(FileStorageException ex) {
+        return Error.builder()
+                .timestamp(LocalDateTime.now().toString())
+                .message(ex.getMessage())
+                .status(HttpStatus.BAD_REQUEST.value())
+                .build();
+    }
 }
