@@ -29,12 +29,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthenticationResponseDto authenticate(AuthenticationRequestDto requestDto) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestDto.getEmail(), requestDto.getPassword()));
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestDto.getEmailOrUsername(), requestDto.getPassword()));
         } catch (LockedException | DisabledException | BadCredentialsException ex) {
             log.error("### Authentication failed: {}", ex.getMessage());
         }
 
-        val user = (User) userDetailsService.loadUserByUsername(requestDto.getEmail());
+        val user = (User) userDetailsService.loadUserByUsername(requestDto.getEmailOrUsername());
 
         Algorithm algorithm = Algorithm.HMAC256("SECRET".getBytes(StandardCharsets.UTF_8));
 
