@@ -11,4 +11,6 @@ public interface UserDao extends BaseDao<User> {
     boolean existsByEmail(String email);
 
     boolean existsByUsername(String username);
+
+    boolean existsByUsernameAndIdIsNot(String username, long id);
 }
