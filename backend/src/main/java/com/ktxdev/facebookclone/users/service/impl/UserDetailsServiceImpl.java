@@ -1,5 +1,6 @@
 package com.ktxdev.facebookclone.users.service.impl;
 
+import com.ktxdev.facebookclone.shared.exceptions.AccessDeniedException;
 import com.ktxdev.facebookclone.users.model.User;
 import com.ktxdev.facebookclone.users.dao.UserDao;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         log.info("### Username: {}", username);
         User user = userDAO.findByUsernameOrEmail(username, username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        if (!user.isVerified())
+            throw new AccessDeniedException("Account has not been verified");
 
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),

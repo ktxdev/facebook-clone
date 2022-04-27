@@ -65,4 +65,14 @@ public class FacebookCloneApplicationExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST.value())
                 .build();
     }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AccessDeniedException.class)
+    public Error handleAccessDeniedException(AccessDeniedException ex) {
+        return Error.builder()
+                .timestamp(LocalDateTime.now().toString())
+                .message(ex.getMessage())
+                .status(HttpStatus.FORBIDDEN.value())
+                .build();
+    }
 }
