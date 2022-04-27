@@ -2,8 +2,8 @@ fb-clone:
   email-sender: noreply@fbclone.com
 
 aws:
-  access-key: 'ACCESS_KEY'
-  secret-key: 'SECRET_KEY'
+  access-key: ENC(RgZI3wpIVdZYtrGfwlfAyxQPSCaLNE+aUSDkz6oERZgZEiJrhotWVae2huC+i4CGywzKagZUSw2fArbHtiVpHw==)
+  secret-key: ENC(FdLY5VGBsM5tnyEObTh/Rrgu2m7c4pqPYDEDGs98dh6QpLDloZLO+uHIU/HUw/Ao27tQO+kUMrKVbJ/qAIy5dfl8fsouGBjoWB2JxHB7/2I=)
   region: 'us-east-2'
   bucket: 'fb-clone'
 
@@ -11,8 +11,8 @@ spring:
   mail:
     host: smtp.mailtrap.io
     port: 2525
-    username: '0f291113d91405'
-    password: 'c2d0f5e27c361b'
+    username: ENC(nq8MnaNwF3a0Czb3V+0mB1+CSdN713dpemkiCWAddf1Z2XHjdiEV/pvSCPfKpbYW)
+    password: ENC(O0gcyY+u65Z/TG9iPdHMjAJ3oxHHUldOZyVQr/tzqGzsebjKl4jEFCv748D7VQwy)
     properties:
       mail:
         smtp:

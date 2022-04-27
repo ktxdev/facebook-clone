@@ -113,7 +113,7 @@ public class UserServiceImpl implements UserService {
     public User uploadProfilePicture(MultipartFile file, Principal principal) {
         val user = findByUsernameOrEmail(principal.getName());
         val filename =  fileStoreService.save(user.getUsername(), file);
-        val profilePictureUrl = String.format("http://localhost:8080/opn/api/v1/filestore/%s?directory=%s", filename, user.getUsername());
+        val profilePictureUrl = String.format("http://localhost:8080/api/opn/v1/filestore/%s?directory=%s", filename, user.getUsername());
 //                linkTo(methodOn(FileStoreRestController.class)
 //                .download(filename, user.getUsername()))
 //                .toUri()

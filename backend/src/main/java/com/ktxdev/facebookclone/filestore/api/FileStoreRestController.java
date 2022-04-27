@@ -11,7 +11,7 @@ public class FileStoreRestController {
 
     private final FileStoreService fileStoreService;
 
-    @GetMapping("/v1/filestore/{filename}")
+    @GetMapping("opn/v1/filestore/{filename}")
     public byte[] download (
             @PathVariable String filename,
             @RequestParam(required = false, defaultValue = "") String directory
