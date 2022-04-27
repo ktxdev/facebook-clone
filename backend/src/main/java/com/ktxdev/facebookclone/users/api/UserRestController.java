@@ -1,5 +1,7 @@
 package com.ktxdev.facebookclone.users.api;
 
+import com.ktxdev.facebookclone.users.dto.UserPasswordUpdateDTO;
+import com.ktxdev.facebookclone.users.dto.UserUpdateDTO;
 import com.ktxdev.facebookclone.users.model.User;
 import com.ktxdev.facebookclone.users.dto.UserCreateDTO;
 import com.ktxdev.facebookclone.users.service.UserService;
@@ -40,8 +42,17 @@ public class UserRestController {
         return ResponseEntity.ok(userService.verifyEmail(username, token));
     }
 
-    @PostMapping(
-            value = "/v1/users/upload-profile-picture",
+    @PutMapping("v1/users/change-username")
+    public ResponseEntity<User> changeUsername(
+            @RequestBody @Valid UserUpdateDTO updateDTO,
+            Principal principal
+    ) {
+        updateDTO.setPrincipal(principal);
+        return ResponseEntity.ok(userService.updateMyUsername(updateDTO));
+    }
+
+    @PutMapping(
+            value = "v1/users/upload-profile-picture",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -50,5 +61,52 @@ public class UserRestController {
             Principal principal
     ) {
         return ResponseEntity.ok(userService.uploadProfilePicture(file, principal));
+    }
+
+    @PutMapping(
+            value = "v1/users/remove-profile-picture",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<User> removeProfilePicture(
+            Principal principal
+    ) {
+        return ResponseEntity.ok(userService.removeProfilePicture(principal));
+    }
+
+    @PutMapping(
+            value = "v1/users/change-password",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<User> updatePassword(
+            @RequestBody UserPasswordUpdateDTO passwordUpdateDTO,
+            Principal principal
+    ) {
+        passwordUpdateDTO.setPrincipal(principal);
+        return ResponseEntity.ok(userService.updatePassword(passwordUpdateDTO));
+    }
+
+    @GetMapping(
+            value = "v1/users/my-profile",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<User> getMyAccountDetails(
+            Principal principal
+    ) {
+        return ResponseEntity.ok(userService.getMyAccountDetails(principal));
+    }
+
+    @DeleteMapping(
+            value = "v1/users",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<?> deleteMyAccount(
+            Principal principal
+    ) {
+        userService.deleteMyAccount(principal);
+        return ResponseEntity.noContent().build();
     }
 }

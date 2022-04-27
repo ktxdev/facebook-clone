@@ -15,15 +15,15 @@ public interface UserService {
 
     User verifyEmail(String username, String token);
 
-    User removeProfilePicture(long id);
+    User removeProfilePicture(Principal principal);
 
     User uploadProfilePicture(MultipartFile file, Principal principal);
 
     User updatePassword(UserPasswordUpdateDTO userPasswordUpdateDTO);
 
-    void deleteMyAccount();
+    void deleteMyAccount(Principal principal);
 
-    User getMyAccountDetails();
+    User getMyAccountDetails(Principal principal);
 
     User findByUsernameOrEmail(String usernameOrEmail);
 }

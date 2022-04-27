@@ -76,12 +76,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateMyUsername(UserUpdateDTO userUpdateDTO) {
-        val authentication = SecurityContextHolder.getContext().getAuthentication();
-        val user = findByUsernameOrEmail(authentication.getName());
+        val user = findByUsernameOrEmail(userUpdateDTO.getPrincipal().getName());
 
         if (userDao.existsByUsernameAndIdIsNot(userUpdateDTO.getUsername(), user.getId()))
             throw new InvalidRequestException("Username already in use");
-        
+
         user.setUsername(userUpdateDTO.getUsername());
         return userDao.save(user);
     }
@@ -89,8 +88,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User verifyEmail(String username, String tokenString) {
-        val user = userDao.findByUsernameOrEmail(username, username)
-                .orElseThrow(() -> new RecordNotFoundException(String.format("User with username: %s not found", username)));
+        val user = findByUsernameOrEmail(username);
 
         if (!tokenService.isValidToken(tokenString))
             throw new InvalidRequestException("Token is invalid");
@@ -106,19 +104,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User removeProfilePicture(long id) {
-        return null;
+    public User removeProfilePicture(Principal principal) {
+        val user = findByUsernameOrEmail(principal.getName());
+        user.setProfilePictureUrl(null);
+        return userDao.save(user);
     }
 
     @Override
     public User uploadProfilePicture(MultipartFile file, Principal principal) {
         val user = findByUsernameOrEmail(principal.getName());
         val filename =  fileStoreService.save(user.getUsername(), file);
-        val profilePictureUrl = String.format("http://localhost:8080/api/opn/v1/filestore/%s?directory=%s", filename, user.getUsername());
-//                linkTo(methodOn(FileStoreRestController.class)
-//                .download(filename, user.getUsername()))
-//                .toUri()
-//                .toString();
+        val profilePictureUrl = String.format(
+                "http://localhost:8080/api/opn/v1/filestore/%s?directory=%s",
+                filename,
+                user.getUsername());
 
         user.setProfilePictureUrl(profilePictureUrl);
         return userDao.save(user);
@@ -126,8 +125,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updatePassword(UserPasswordUpdateDTO userPasswordUpdateDTO) {
-        val authentication = SecurityContextHolder.getContext().getAuthentication();
-        val user = findByUsernameOrEmail(authentication.getName());
+        val user = findByUsernameOrEmail(userPasswordUpdateDTO.getPrincipal().getName());
+
         if (passwordEncoder.matches(userPasswordUpdateDTO.getOldPassword(), user.getPassword())) {
             throw new InvalidRequestException("Old password is incorrect");
         }
@@ -137,16 +136,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteMyAccount() {
-        val usernameOrEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        val user = findByUsernameOrEmail(usernameOrEmail);
+    public void deleteMyAccount(Principal principal) {
+        val user = findByUsernameOrEmail(principal.getName());
         userDao.delete(user);
     }
 
     @Override
-    public User getMyAccountDetails() {
-        val usernameOrEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        return findByUsernameOrEmail(usernameOrEmail);
+    public User getMyAccountDetails(Principal principal) {
+        return findByUsernameOrEmail(principal.getName());
     }
 
     @Override
