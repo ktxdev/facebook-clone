@@ -1,36 +1,33 @@
 package com.ktxdev.facebookclone.users.service.impl;
 
-import com.ktxdev.facebookclone.filestore.api.FileStoreRestController;
 import com.ktxdev.facebookclone.filestore.service.FileStoreService;
 import com.ktxdev.facebookclone.shared.exceptions.InvalidRequestException;
 import com.ktxdev.facebookclone.shared.exceptions.RecordNotFoundException;
 import com.ktxdev.facebookclone.tokens.service.TokenService;
 import com.ktxdev.facebookclone.users.api.UserRestController;
-import com.ktxdev.facebookclone.users.model.User;
 import com.ktxdev.facebookclone.users.dao.UserDao;
 import com.ktxdev.facebookclone.users.dto.UserCreateDTO;
 import com.ktxdev.facebookclone.users.dto.UserPasswordUpdateDTO;
 import com.ktxdev.facebookclone.users.dto.UserUpdateDTO;
+import com.ktxdev.facebookclone.users.model.User;
 import com.ktxdev.facebookclone.users.service.UserService;
 import com.ktxdev.facebookclone.users.service.events.UserSignUpSuccessfulEvent;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.http.entity.ContentType;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.security.Principal;
+import java.util.Arrays;
 
-import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
+import static org.apache.http.entity.ContentType.*;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @Slf4j
 @Service
@@ -69,6 +66,8 @@ public class UserServiceImpl implements UserService {
                 .toUri()
                 .toString();
 
+        log.info("### Verification Link: {}", url);
+
         applicationEventPublisher.publishEvent(new UserSignUpSuccessfulEvent(user, url));
 
         return user;
@@ -94,7 +93,7 @@ public class UserServiceImpl implements UserService {
             throw new InvalidRequestException("Token is invalid");
 
         val token = tokenService.findByToken(tokenString);
-        if (!token.getOwner().getEmail().equals(username))
+        if (!token.getOwner().getUsername().equals(username))
             throw new InvalidRequestException("Token is invalid");
 
         user.setVerified(true);
@@ -112,8 +111,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User uploadProfilePicture(MultipartFile file, Principal principal) {
+
+        if (!Arrays.asList(IMAGE_PNG.getMimeType(), IMAGE_JPEG.getMimeType(), IMAGE_GIF.getMimeType())
+                .contains(file.getContentType()))
+            throw new InvalidRequestException("File must be an image");
+
         val user = findByUsernameOrEmail(principal.getName());
+
         val filename =  fileStoreService.save(user.getUsername(), file);
+
         val profilePictureUrl = String.format(
                 "http://localhost:8080/api/opn/v1/filestore/%s?directory=%s",
                 filename,
