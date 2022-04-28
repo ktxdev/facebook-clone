@@ -5,14 +5,14 @@ import com.ktxdev.facebookclone.posts.model.Post;
 import com.ktxdev.facebookclone.posts.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,12 +21,17 @@ public class PostRestController {
 
     private final PostService postService;
 
-    @PostMapping("v1/posts")
+    @PostMapping(
+            value = "v1/posts",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+            produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Post> createPost(
-            @RequestBody PostDto postDto,
+            @RequestPart(value = "caption", required = false) String caption,
+            @RequestPart(value = "file", required = false) MultipartFile file,
             HttpServletRequest request
     ) {
         val uri = ServletUriComponentsBuilder.fromRequest(request).build().toUri();
-        return ResponseEntity.created(uri).body(postService.createPost(postDto));
+        return ResponseEntity.created(uri)
+                .body(postService.createPost(new PostDto(caption, Optional.ofNullable(file))));
     }
 }
