@@ -1,9 +1,10 @@
-package com.ktxdev.facebookclone.tokens.service.impl;
+package com.ktxdev.facebookclone.tokens;
 
 import com.ktxdev.facebookclone.shared.exceptions.RecordNotFoundException;
 import com.ktxdev.facebookclone.tokens.dao.TokenDao;
 import com.ktxdev.facebookclone.tokens.model.Token;
 import com.ktxdev.facebookclone.tokens.service.TokenService;
+import com.ktxdev.facebookclone.tokens.service.impl.TokenServiceImpl;
 import com.ktxdev.facebookclone.users.model.User;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;

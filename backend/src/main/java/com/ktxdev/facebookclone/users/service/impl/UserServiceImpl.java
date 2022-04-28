@@ -15,8 +15,8 @@ import com.ktxdev.facebookclone.users.service.events.UserSignUpSuccessfulEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.apache.http.entity.ContentType;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
         log.debug("### Signing up user: {}", userCreateDTO.getEmail());
 
         if (userDao.existsByEmail(userCreateDTO.getEmail()))
-            throw new InvalidRequestException("Email is already registered.");
+            throw new InvalidRequestException("Email is already registered");
 
         if (userDao.existsByUsername(userCreateDTO.getUsername()))
             throw new InvalidRequestException("Username already taken");
@@ -75,7 +75,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateMyUsername(UserUpdateDTO userUpdateDTO) {
-        val user = findByUsernameOrEmail(userUpdateDTO.getPrincipal().getName());
+        val username = SecurityContextHolder.getContext().getAuthentication().getName();
+        val user = findByUsernameOrEmail(username);
 
         if (userDao.existsByUsernameAndIdIsNot(userUpdateDTO.getUsername(), user.getId()))
             throw new InvalidRequestException("Username already in use");
